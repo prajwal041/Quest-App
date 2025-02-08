@@ -76,3 +76,5 @@ No. After interviewing, please change any solutions shared publicly to be privat
 
 ### Q. Do I have to spend money out of my own pocket to complete the quest?
 No. There are many possible solutions to this quest that would be zero cost to you when using [AWS](https://aws.amazon.com/free), [GCP](https://cloud.google.com/free), or [Azure](https://azure.microsoft.com/en-us/pricing/free-services).
+
+### Updates
