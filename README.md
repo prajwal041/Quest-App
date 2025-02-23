@@ -78,4 +78,92 @@ No. After interviewing, please change any solutions shared publicly to be privat
 No. There are many possible solutions to this quest that would be zero cost to you when using [AWS](https://aws.amazon.com/free), [GCP](https://cloud.google.com/free), or [Azure](https://azure.microsoft.com/en-us/pricing/free-services).
 
 ### Updates
-I went through the Quest App, I really enjoyed the App deployment & learnt a lot 
+I went through the Quest App, I really enjoyed the App deployment & learnt a lot and Thanks for recommending this.
+I used Infrastructure as Code (IaC) in a public cloud AWS. Below are detailed steps to deploy and test the app on AWS using Terraform and Docker.
+Step 1: Set Up Your Environment
+
+    1. Install Prerequisites:
+        - Install Terraform.
+        - Install AWS CLI and configure it with your credentials (aws configure).
+        - Install Docker.
+        - Install Git.
+
+    2. Create a Git Repository:
+        - Initialize a Git repository locally:
+        mkdir quest
+        cd quest
+        git init
+        
+    3. Endpoint created in app.js
+
+Step 2: Build and Push Docker Image
+    
+    1. Dockerfile has been added
+
+    2. Build and tag the Docker image and exposed Port in 80:
+        docker build -t quest-app .
+
+    3. Run the image locally:
+        docker run -d -p 3000:3000 quest-app
+
+        Retrieve the SECRET_WORD from index page
+        Goto the http://localhost:3000
+        You should get: Welcome to the Cloud Quest! The SECRET_WORD is: CLOUDY
+
+    3. Pushed the image to a dockerhub registry
+        docker tag quest-app prajshet/quest-app
+        docker push prajshet/quest-app
+    You can view the image under prajshet/quest-app
+
+
+Step 3: Deployment with Terraform
+
+    1. Initialize Terraform:
+        terraform init
+    
+    2. Create main.tf with EC2 instances and necessary inbound, outbnound rules
+        Here are the following will be added:
+        - Create app_server --> Inject SECRET_WORD here in docker run as parameter
+        - Create app loadbalncers
+        - Create load balancer App listener
+        - Create App Target Group
+        - Create App Target Group Attachment
+        - Create Load Balancer Security Group
+
+    2. Check the configuration
+        terraform plan
+
+    3. Apply the Terraform configuration:
+        terraform apply -auto-approve
+        
+    4. Check in Deployed EC2 instance
+        ssh -i "quest-key.pem" ec2-user@ec2-52-54-218-125.compute-1.amazonaws.com
+        
+       Now check App is responding in EC2 instance locally:
+        [ec2-user@ip-172-31-85-143 ~]$ curl http://localhost:80/
+            Welcome to the Cloud Quest! The SECRET_WORD is: CLOUDY
+
+Step 4: Check the outcome in Load Balancer DNS
+
+    Here is how I verified that solved these stages
+    Each stage can be tested with LB DNS, http://cloud-quest-lb-918987794.us-east-1.elb.amazonaws.com 
+
+    1. Public cloud & index page (contains the secret word) - $ curl http://cloud-quest-lb-918987794.us-east-1.elb.amazonaws.com
+        Welcome to the Cloud Quest! The SECRET_WORD is: CLOUDY
+
+    2. Docker check - $ curl http://cloud-quest-lb-918987794.us-east-1.elb.amazonaws.com/docker
+        This app is running inside a Docker container!
+
+    3. Secret Word check - $ curl http://cloud-quest-lb-918987794.us-east-1.elb.amazonaws.com/secret_word
+        The injected SECRET_WORD is: CLOUDY
+
+    4. Load Balancer check - $ curl http://cloud-quest-lb-918987794.us-east-1.elb.amazonaws.com/loadbalanced
+        This request was load balanced!
+
+    5. TLS check - $ curl http://cloud-quest-lb-918987794.us-east-1.elb.amazonaws.com/tls
+        This request was served over HTTP (no TLS).
+
+Step 4: Clean Up
+    After completing the quest, destroy the infrastructure to avoid unnecessary charges:
+
+    terraform destroy
