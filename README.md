@@ -80,7 +80,8 @@ No. There are many possible solutions to this quest that would be zero cost to y
 ### Updates
 I went through the Quest App, I really enjoyed the App deployment & learnt a lot and Thanks for recommending this.
 I used Infrastructure as Code (IaC) in a public cloud AWS. Below are detailed steps to deploy and test the app on AWS using Terraform and Docker.
-Step 1: Set Up Your Environment
+
+**Step 1: Set Up Your Environment**
 
     1. Install Prerequisites:
         - Install Terraform.
@@ -96,7 +97,7 @@ Step 1: Set Up Your Environment
         
     3. Endpoint created in app.js
 
-Step 2: Build and Push Docker Image
+**Step 2: Build and Push Docker Image**
     
     1. Dockerfile has been added
 
@@ -116,7 +117,7 @@ Step 2: Build and Push Docker Image
     You can view the image under prajshet/quest-app
 
 
-Step 3: Deployment with Terraform
+**Step 3: Deployment with Terraform**
 
     1. Initialize Terraform:
         terraform init
@@ -143,7 +144,7 @@ Step 3: Deployment with Terraform
         [ec2-user@ip-172-31-85-143 ~]$ curl http://localhost:80/
             Welcome to the Cloud Quest! The SECRET_WORD is: CLOUDY
 
-Step 4: Check the outcome in Load Balancer DNS
+**Step 4: Check the outcome in Load Balancer DNS**
 
     Here is how I verified that solved these stages
     Each stage can be tested with LB DNS, http://cloud-quest-lb-918987794.us-east-1.elb.amazonaws.com 
@@ -163,7 +164,69 @@ Step 4: Check the outcome in Load Balancer DNS
     5. TLS check - $ curl http://cloud-quest-lb-918987794.us-east-1.elb.amazonaws.com/tls
         This request was served over HTTP (no TLS).
 
-Step 4: Clean Up
+**Step 4: Clean Up**
+
     After completing the quest, destroy the infrastructure to avoid unnecessary charges:
 
     terraform destroy
+
+**Given more time, I would improve...**
+
+    1. Automated CI/CD Pipeline:
+        - Implement a CI/CD pipeline using tools like GitHub Actions, Jenkins, or GitLab CI/CD to automate the deployment process.
+        - This would ensure faster and more reliable deployments.
+
+    2. Multi-Cloud Support:
+        - Extend the Terraform configuration to support multiple cloud providers (AWS, GCP, Azure) for better flexibility and redundancy.
+
+    3. Kubernetes Integration:
+        - Deploy the app on Kubernetes (EKS, GKE, or AKS) instead of a single Docker container.
+        - This would improve scalability, resilience, and ease of management.
+
+    4. Enhanced Security:
+        - Use HTTPS instead of HTTP by configuring TLS certificates for the load balancer.
+        - Implement security best practices such as network segmentation, IAM roles, and secrets management.
+
+    5. Monitoring and Logging:
+        - Integrate monitoring tools like Prometheus and Grafana to track app performance.
+        - Set up centralized logging using tools like ELK Stack or CloudWatch Logs.
+
+    6. Infrastructure Testing:
+        - Use tools like Terratest to write automated tests for the Terraform configuration.
+        - This would ensure the infrastructure is deployed correctly and meets requirements.
+
+    7. High Availability:
+        - Deploy the app across multiple availability zones to ensure high availability.
+        - Use auto-scaling groups to handle traffic spikes.
+    Offcourse if I had more time I would like to add another approach where I can included automated way using 
+    k8s and AWS Fargate service
+
+**Shortcomings/Immaturities in the Solution**
+
+    1. Single Cloud Provider:
+        - The solution is currently limited to AWS. Supporting multiple cloud providers would make it more robust and versatile.
+
+    2. Manual Deployment:
+        - The deployment process is manual and lacks automation. A CI/CD pipeline would streamline the process.
+
+    3. Basic Security:
+        - The solution does not include advanced security measures like HTTPS, IAM roles, or secrets management.
+
+    4. Lack of Scalability:
+        - The app is deployed as a single container without auto-scaling or Kubernetes orchestration, limiting its scalability.
+
+    5. No Monitoring or Logging:
+        - There is no monitoring or logging setup, making it difficult to troubleshoot issues or track performance.
+
+    6. Limited Testing:
+        - The infrastructure and app are not thoroughly tested, which could lead to undetected issues in production.
+
+**Conclusion**
+
+    This solution provides a basic deployment of the app in a public cloud using Terraform and Docker. While it 
+    meets the core requirements, there are several areas for improvement, particularly in automation, security, 
+    scalability, and multi-cloud support. Given more time, I would focus on implementing these enhancements to 
+    create a more robust and production-ready solution.
+
+**Snippets**:
+![Image](/Users/prajwalshetty/Desktop/Screenshot 2025-02-23 at 1.38.40 PM.png)
