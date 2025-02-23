@@ -229,4 +229,27 @@ I used Infrastructure as Code (IaC) in a public cloud AWS. Below are detailed st
     create a more robust and production-ready solution.
 
 **Snippets**:
-![Image](/Users/prajwalshetty/Desktop/Screenshot 2025-02-23 at 1.38.40 PM.png)
+
+Local testing to retrive SECRET_WORD
+
+![Local testing](/Users/prajwalshetty/Desktop/Screenshot 2025-02-23 at 1.38.40 PM.png)
+
+Load Balancer setup
+
+![Load Balancer setup](../../Desktop/Screenshot%202025-02-23%20at%201.38.40%E2%80%AFPM.png)
+
+DNS routing
+
+![DNS routing](../../Desktop/Screenshot%202025-02-23%20at%2010.08.10%E2%80%AFPM.png)
+
+Endpoints
+
+![SECRET_WORD](../../Desktop/Screenshot%202025-02-23%20at%2010.08.44%E2%80%AFPM.png)
+
+![docker](../../Desktop/Screenshot%202025-02-23%20at%2010.08.59%E2%80%AFPM.png)
+
+![Injected_secret](../../Desktop/Screenshot%202025-02-23%20at%2010.09.08%E2%80%AFPM.png)
+
+![LoadBalancer](../../Desktop/Screenshot%202025-02-23%20at%2010.09.17%E2%80%AFPM.png)
+
+![tls](../../Desktop/Screenshot%202025-02-23%20at%2010.09.32%E2%80%AFPM.png)
