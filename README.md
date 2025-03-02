@@ -253,3 +253,15 @@ Endpoints
 ![LoadBalancer](../../Desktop/Screenshot%202025-02-23%20at%2010.09.17%E2%80%AFPM.png)
 
 ![tls](../../Desktop/Screenshot%202025-02-23%20at%2010.09.32%E2%80%AFPM.png)
+
+**Bonus**
+
+    CI/CD pipeline is enablement:
+    GitHub Secrets Setup
+    Before running the workflow, store these secrets in GitHub Settings → Secrets:
+
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    - AWS_EC2_IP → Public IP of your EC2 instance
+    - DOCKER_USERNAME
+    - DOCKER_PASSWORD
