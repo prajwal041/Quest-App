@@ -51,5 +51,26 @@ jobs:
               sudo yum install -y docker
               sudo service docker start
               sudo usermod -a -G docker ec2-user
-              sudo docker run -d -p 80:3000 -e SECRET_WORD=CLOUDY --name quest-app prajshet/quest-app:latest
+              sudo docker run -d -p 80:3000 -e SECRET_WORD=${{ secrets.SECRET_WORD }} --name quest-app prajshet/quest-app:latest
           EOF
+
+  deploy-to-kubernetes:
+    needs: deploy-app
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS CLI & Kubeconfig
+        run: aws eks update-kubeconfig --name cloud-quest-cluster
+
+      - name: Apply Kubernetes Manifests
+        run: |
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
+          kubectl apply -f hpa.yaml
+
+      - name: Restart Deployment for new Image
+        run: |
+          kubectl rollout restart deployment cloud-quest-app

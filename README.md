@@ -265,3 +265,31 @@ Endpoints
     - AWS_EC2_IP → Public IP of your EC2 instance
     - DOCKER_USERNAME
     - DOCKER_PASSWORD
+
+
+**Application Scaling**
+
+    Run the below commands to run eks.tf:
+    terraform init
+    terraform apply -auto-approve
+
+    update kubectl to use your new EKS cluster:
+    aws eks update-kubeconfig --name cloud-quest-cluster
+
+    Once EKS cluster is ready deploy the App using k8s:
+    - This deploy your app to EKS with 3 replicas for scaling
+    kubectl apply -f deployment.yaml
+
+    - This will create a LoadBalancer in AWS to expose your app.
+    kubectl apply -f service.yaml
+
+    - This automatically scales your app when CPU usage goes above 50%.
+    kubectl apply -f hpa.yaml
+
+    - Verify the deployment:
+    kubectl get pods
+    kubectl get services
+    kubectl get hpa
+
+
+    

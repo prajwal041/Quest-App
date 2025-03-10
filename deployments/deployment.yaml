@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-quest-app
+spec:
+  replicas: 3  # Start with 3 pods for scaling
+  selector:
+    matchLabels:
+      app: cloud-quest-app
+  template:
+    metadata:
+      labels:
+        app: cloud-quest-app
+    spec:
+      containers:
+        - name: cloud-quest-app
+          image: prajshet/quest-app:latest  # Docker Hub image
+          ports:
+            - containerPort: 3000
+          env:
+            - name: SECRET_WORD
+              value: "CLOUDY"

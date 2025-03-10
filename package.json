@@ -1,15 +1,13 @@
 {
-  "name": "quest",
+  "name": "cloud-quest-app",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/000.js",
+  "description": "A simple app for the cloud quest challenge",
+  "main": "app.js",
   "scripts": {
-    "start": "node src/000.js"
+    "start": "node src/000.js",
+    "run-app": "node app.js"
   },
   "dependencies": {
-    "express": "~4.16.3"
-  },
-  "keywords": [],
-  "author": "Rearc",
-  "license": "ISC"
+    "express": "^4.17.1"
+  }
 }
