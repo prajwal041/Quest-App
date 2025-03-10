@@ -95,7 +95,7 @@ I used Infrastructure as Code (IaC) in a public cloud AWS. Below are detailed st
         cd quest
         git init
         
-    3. Endpoint created in app.js
+    3. Endpoint created in app.js or you can use legacy src/000.js which uses unix bin files
 
 **Step 2: Build and Push Docker Image**
     
@@ -117,19 +117,27 @@ I used Infrastructure as Code (IaC) in a public cloud AWS. Below are detailed st
     You can view the image under prajshet/quest-app
 
 
-**Step 3: Deployment with Terraform**
+**Step 3: Deployment with Terraform via EC2 and LB**
+    
+    Navigate to terraform_ec2/main.tf
 
     1. Initialize Terraform:
         terraform init
     
-    2. Create main.tf with EC2 instances and necessary inbound, outbnound rules
+    2. In main.tf with EC2 instances and necessary inbound, outbnound rules
         Here are the following will be added:
+        - Create aws_vpc
+        - Create aws_internet_gateway
+        - Create two aws_subnet
+        - Create aws_route_table associates aws_internet_gateway
+        - Create aws_route_table_association links aws_route_table
+        - Create aws_security_group through aws_vpc ingress, egress for instance
         - Create app_server --> Inject SECRET_WORD here in docker run as parameter
-        - Create app loadbalncers
-        - Create load balancer App listener
-        - Create App Target Group
-        - Create App Target Group Attachment
-        - Create Load Balancer Security Group
+        - Create app loadbalncers through aws security group & aws_subnet
+        - Create load balancer App listener through aws_lb arn
+        - Create App Target Group through aws_vpc
+        - Create App Target Group Attachment through aws_lb_target_group arn
+        - Create Load Balancer Security Group through aws_vpc, ingress & egress to accept traffic
 
     2. Check the configuration
         terraform plan
@@ -170,35 +178,89 @@ I used Infrastructure as Code (IaC) in a public cloud AWS. Below are detailed st
 
     terraform destroy
 
-**Given more time, I would improve...**
+**Improvements Done**
+    
+    1. Deployment with Terraform via EKS & Fargate
+        Navigate to terraform/eks.tf
 
-    1. Automated CI/CD Pipeline:
+        1) Initialize Terraform:
+            terraform init
+        2) In eks.tf with k8s cluster, ELB and ec2 instances and necessary inbound, outbnound rules
+            - Add aws_iam_role_policy_attachment for below policies:
+                a. eks_worker_node_policy
+                b. eks_cni_policy
+                c. eks_ecr_readonly_policy
+                d. eks_cluster_policy
+                e. eks_vpc_resource_controller
+                f. eks_fargate_policy
+            - Add aws_iam_role for below:
+                a. eks
+                b. eks_node
+                c. eks_fargate
+            - Add aws_vpc
+            - Add public aws_subnet through aws_vpc
+            - Add aws_internet_gateway
+            - Add public aws_route_table through aws_internet_gateway
+            - Add aws_route_table_association through aws_route_table
+            - Add aws_security_group with ingress & egress rules
+            - Add aws_eks_cluster with aws_iam_role, aws_subnet and aws_security_group
+            - Add aws_eks_node_group with aws_eks_cluster, aws_iam_role, aws_subnet along with scaling config and aws_iam_role_policy_attachment
+            - Add private aws_subnet
+            - Add profile for AWS Fargate through aws_eks_cluster, aws_iam_role eks arn and private aws_subnet
+        3) Check the configuration
+            terraform plan
+        4) Apply the Terraform configuration:
+            terraform apply -auto-approve
+        5) switch to deployements
+            Application Scaling
+
+            update kubectl to use your new EKS cluster:
+            aws eks update-kubeconfig --name cloud-quest-cluster
+        
+            Once EKS cluster is ready deploy the App using k8s:
+            - This deploy your app to EKS with 3 replicas for scaling
+            kubectl apply -f deployment.yaml
+        
+            - This will create a LoadBalancer in AWS to expose your app.
+            kubectl apply -f service.yaml
+        
+            - This automatically scales your app when CPU usage goes above 50%.
+            kubectl apply -f hpa.yaml
+        
+            - Verify the deployment:
+            kubectl get pods
+            kubectl get services
+            kubectl get hpa
+        
+    2. Automated CI/CD Pipeline:
         - Implement a CI/CD pipeline using tools like GitHub Actions, Jenkins, or GitLab CI/CD to automate the deployment process.
         - This would ensure faster and more reliable deployments.
 
-    2. Multi-Cloud Support:
+**Given more time, I would improve...**
+
+    1. Multi-Cloud Support:
         - Extend the Terraform configuration to support multiple cloud providers (AWS, GCP, Azure) for better flexibility and redundancy.
 
-    3. Kubernetes Integration:
-        - Deploy the app on Kubernetes (EKS, GKE, or AKS) instead of a single Docker container.
+    2. Better Kubernetes Integration:
+        - Deploy the app on Kubernetes (EKS, GKE, or AKS) cluster of small instance nodes.
         - This would improve scalability, resilience, and ease of management.
 
-    4. Enhanced Security:
+    3. Enhanced Security:
         - Use HTTPS instead of HTTP by configuring TLS certificates for the load balancer.
         - Implement security best practices such as network segmentation, IAM roles, and secrets management.
 
-    5. Monitoring and Logging:
+    4. Monitoring and Logging:
         - Integrate monitoring tools like Prometheus and Grafana to track app performance.
         - Set up centralized logging using tools like ELK Stack or CloudWatch Logs.
 
-    6. Infrastructure Testing:
+    5. Infrastructure Testing:
         - Use tools like Terratest to write automated tests for the Terraform configuration.
         - This would ensure the infrastructure is deployed correctly and meets requirements.
 
-    7. High Availability:
+    6. High Availability:
         - Deploy the app across multiple availability zones to ensure high availability.
         - Use auto-scaling groups to handle traffic spikes.
-    Offcourse if I had more time I would like to add another approach where I can included automated way using 
+    Since I had more time I added another approach where I included automated way using 
     k8s and AWS Fargate service
 
 **Shortcomings/Immaturities in the Solution**
@@ -206,19 +268,13 @@ I used Infrastructure as Code (IaC) in a public cloud AWS. Below are detailed st
     1. Single Cloud Provider:
         - The solution is currently limited to AWS. Supporting multiple cloud providers would make it more robust and versatile.
 
-    2. Manual Deployment:
-        - The deployment process is manual and lacks automation. A CI/CD pipeline would streamline the process.
+    2. Basic Security:
+        - The solution does not include advanced security measures like restricted ingress & egress, HTTPS, IAM roles, or secrets management.
 
-    3. Basic Security:
-        - The solution does not include advanced security measures like HTTPS, IAM roles, or secrets management.
-
-    4. Lack of Scalability:
-        - The app is deployed as a single container without auto-scaling or Kubernetes orchestration, limiting its scalability.
-
-    5. No Monitoring or Logging:
+    3. No Monitoring or Logging:
         - There is no monitoring or logging setup, making it difficult to troubleshoot issues or track performance.
 
-    6. Limited Testing:
+    4. Limited Testing:
         - The infrastructure and app are not thoroughly tested, which could lead to undetected issues in production.
 
 **Conclusion**
@@ -254,10 +310,9 @@ Endpoints
 
 ![tls](../../Desktop/Screenshot%202025-02-23%20at%2010.09.32%E2%80%AFPM.png)
 
-**Bonus**
+**Bonus: Add these details in GitHub secrets**
 
     CI/CD pipeline is enablement:
-    GitHub Secrets Setup
     Before running the workflow, store these secrets in GitHub Settings → Secrets:
 
     - AWS_ACCESS_KEY_ID
@@ -267,29 +322,7 @@ Endpoints
     - DOCKER_PASSWORD
 
 
-**Application Scaling**
 
-    Run the below commands to run eks.tf:
-    terraform init
-    terraform apply -auto-approve
-
-    update kubectl to use your new EKS cluster:
-    aws eks update-kubeconfig --name cloud-quest-cluster
-
-    Once EKS cluster is ready deploy the App using k8s:
-    - This deploy your app to EKS with 3 replicas for scaling
-    kubectl apply -f deployment.yaml
-
-    - This will create a LoadBalancer in AWS to expose your app.
-    kubectl apply -f service.yaml
-
-    - This automatically scales your app when CPU usage goes above 50%.
-    kubectl apply -f hpa.yaml
-
-    - Verify the deployment:
-    kubectl get pods
-    kubectl get services
-    kubectl get hpa
 
 
     
