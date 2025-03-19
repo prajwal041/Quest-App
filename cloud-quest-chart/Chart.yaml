@@ -1,0 +1,6 @@
+apiversion: v2
+name: cloud-quest-chart
+description: A Helm chart for deploying Cloud Quest App on Kubernetes
+type: application
+version: 0.1.0
+appVersion: "latest"

@@ -1,0 +1,20 @@
+replicaCount: 3
+
+image:
+  repository: prajshet/quest-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 3000
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+
+env:
+  SECRET_WORD: "CLOUDY"

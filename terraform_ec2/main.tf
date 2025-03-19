@@ -3,28 +3,28 @@ provider "aws" {
 }
 
 # Create a VPC
-resource "aws_vpc" "my_vpc" {
+resource "aws_vpc" "quest_vpc" {
   cidr_block = "10.0.0.0/16"
   enable_dns_support = true
   enable_dns_hostnames = true
 
   tags = {
-    Name = "my-vpc"
+    Name = "quest-vpc"
   }
 }
 
 # Create an Internet Gateway
-resource "aws_internet_gateway" "my_igw" {
-  vpc_id = aws_vpc.my_vpc.id
+resource "aws_internet_gateway" "quest_igw" {
+  vpc_id = aws_vpc.quest_vpc.id
 
   tags = {
-    Name = "my-igw"
+    Name = "quest-igw"
   }
 }
 
 # Create Public Subnet 1
 resource "aws_subnet" "public_subnet_1" {
-  vpc_id                  = aws_vpc.my_vpc.id
+  vpc_id                  = aws_vpc.quest_vpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
@@ -36,7 +36,7 @@ resource "aws_subnet" "public_subnet_1" {
 
 # Create Public Subnet 2
 resource "aws_subnet" "public_subnet_2" {
-  vpc_id                  = aws_vpc.my_vpc.id
+  vpc_id                  = aws_vpc.quest_vpc.id
   cidr_block              = "10.0.2.0/24"
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
@@ -48,11 +48,11 @@ resource "aws_subnet" "public_subnet_2" {
 
 # Create a Route Table for Public Subnets
 resource "aws_route_table" "public_route_table" {
-  vpc_id = aws_vpc.my_vpc.id
+  vpc_id = aws_vpc.quest_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.my_igw.id
+    gateway_id = aws_internet_gateway.quest_igw.id
   }
 
   tags = {
@@ -75,7 +75,7 @@ resource "aws_route_table_association" "public_subnet_2_association" {
 # Security Group for EC2 Instance
 resource "aws_security_group" "instance_sg" {
   name_prefix = "instance-sg"
-  vpc_id      = aws_vpc.my_vpc.id
+  vpc_id      = aws_vpc.quest_vpc.id
 
   ingress {
     from_port   = 80
@@ -139,7 +139,7 @@ resource "aws_lb_target_group" "app_tg" {
   name     = "cloud-quest-tg"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = aws_vpc.my_vpc.id
+  vpc_id   = aws_vpc.quest_vpc.id
 
   health_check {
     path                = "/"
@@ -166,7 +166,7 @@ resource "aws_lb_listener" "app_listener" {
 # Security Group for Load Balancer
 resource "aws_security_group" "lb_sg" {
   name_prefix = "lb-sg"
-  vpc_id      = aws_vpc.my_vpc.id
+  vpc_id      = aws_vpc.quest_vpc.id
 
   ingress {
     from_port   = 80

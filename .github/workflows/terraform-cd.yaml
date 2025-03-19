@@ -65,11 +65,12 @@ jobs:
       - name: Configure AWS CLI & Kubeconfig
         run: aws eks update-kubeconfig --region us-east-1 --name cloud-quest-cluster
 
-      - name: Apply Kubernetes Manifests
+      - name: Deploy Helm Chart
         run: |
-          kubectl apply -f deployment.yaml
-          kubectl apply -f service.yaml
-          kubectl apply -f hpa.yaml
+          helm upgrade --install cloud-quest ./cloud-quest-chart \
+            --set image.tag=latest \
+            --set service.type=LoadBalancer \
+            --set autoscaling.enabled=true
 
       - name: Restart Deployment for new Image
         run: |

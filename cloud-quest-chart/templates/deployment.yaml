@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+  labels:
+    app: cloud-quest-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: cloud-quest-app
+  template:
+    metadata:
+      labels:
+        app: cloud-quest-app
+    spec:
+      containers:
+        - name: cloud-quest-app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          env:
+            - name: SECRET_WORD
+              value: "{{ .Values.env.SECRET_WORD }}"

@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: cloud-quest-project
+  namespace: argocd
+spec:
+  description: Project for Cloud Quest App
+  sourceRepos:
+    - 'https://github.com/prajwal041/Quest-App.git'  # Replace with your Git repo
+  destinations:
+    - namespace: cloud-quest
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"

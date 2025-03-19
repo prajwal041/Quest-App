@@ -1,13 +1,16 @@
 {
-  "name": "cloud-quest-app",
+  "name": "quest",
   "version": "1.0.0",
   "description": "A simple app for the cloud quest challenge",
-  "main": "app.js",
+  "main": "src/000.js",
   "scripts": {
     "start": "node src/000.js",
     "run-app": "node app.js"
   },
   "dependencies": {
     "express": "^4.17.1"
-  }
+  },
+  "keywords": [],
+  "author": "Prajwal Shetty",
+  "license": "Open Source Public"
 }

@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloud-quest-app
+  namespace: argocd
+spec:
+  project: cloud-quest-project  # Links to the project above
+  source:
+    repoURL: 'https://github.com/prajwal-shetty/cloud-quest-helm.git'  # Change to your repo
+    targetRevision: prajwal_shetty  # Or your branch name
+    path: quest/cloud-quest-chart  # Path to the Helm chart inside your repo
+    helm:
+      values: |
+        replicaCount: 3
+        service:
+          type: LoadBalancer
+        autoscaling:
+          enabled: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cloud-quest
+  syncPolicy:
+    automated:
+      prune: true  # Removes old resources no longer in Git
+      selfHeal: true  # Fixes manual changes made outside GitOps
+    syncOptions:
+      - CreateNamespace=true  # Ensures the namespace is created if missing

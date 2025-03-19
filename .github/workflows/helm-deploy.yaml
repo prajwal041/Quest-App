@@ -1,0 +1,31 @@
+name: Helm Deployment
+
+on:
+  workflow_dispatch:  # Manually trigger Helm deployment
+  push:
+    branches:
+      - prajwal_shetty
+    paths:
+      - "helm/**"
+
+jobs:
+  deploy-helm:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS CLI & Kubeconfig
+        run: aws eks update-kubeconfig --region us-east-1 --name cloud-quest-cluster
+
+      - name: Install Helm
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Deploy Helm Chart
+        run: |
+          helm upgrade --install cloud-quest ./cloud-quest-chart \
+            --set image.tag=latest \
+            --set service.type=LoadBalancer \
+            --set autoscaling.enabled=true
